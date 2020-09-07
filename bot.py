@@ -24,7 +24,6 @@ YES_NO_OPTIONS = [['Yes'], ['No']]
 def start(update, context):
     id = update.message.chat_id
     user = update.message.from_user
-    context.user_data['Name'] = f'{user.first_name}'
 
     update.message.reply_text(f'''Hello! {user.first_name} 
 If you are curious to know about stuff and crave for a thriving & harmonious planet based on respect for all life forms, justice and dignity for all - you have come to the right place,
@@ -36,8 +35,10 @@ First tell us a bit about you in a voice note, and we maybe able to help you dis
 
 
 def audio(update, context):
+    id = update.message.chat_id
+    user = update.message.from_user
     file = context.bot.get_file(update.message.voice.file_id)
-    file.download(f'ReceivedAudio/{update.message.from_user["username"]}.ogg')
+    file.download(f'./ReceivedAudio/{user.first_name}.ogg')
     update.message.reply_text('''S-Maps is an interactive tool to ease you into the complexity of any issue that you are interested in.
 
 It helps to navigate complexities that we face within and outside.
@@ -183,7 +184,16 @@ def confirmation(update, context):
                 reply_markup=ReplyKeyboardRemove())
         user = update.message.from_user
 
-        db.add_item(**context.user_data)
+#        db.add_item(**context.user_data)
+        db.add_item(user.first_name,
+        context.user_data["profile"],
+        context.user_data["Date_Time"],
+        context.user_data["peak_experience"],
+        context.user_data["purpose"],
+        context.user_data["contribution"],
+        context.user_data["three_people"], 
+		context.user_data["qualities"], 
+		)
 
     # Send message to the channel
         context.bot.send_message(chat_id=-1001437510301,text=
