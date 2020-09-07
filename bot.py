@@ -14,7 +14,7 @@ db.setup()
 
 
 
-AUDIO, NAME, PROFILE, COHORT, PROCESS, PURPOSE, CONTRIBUTION, THREE_PEOPLE, QUALITIES, CONFIRMATION, POINTS= range(11)
+AUDIO, PROFILE, COHORT, PROCESS, PURPOSE, CONTRIBUTION, THREE_PEOPLE, QUALITIES, CONFIRMATION, POINTS= range(10)
 
 # OPTONS
 DATE_TIME = [['10 Septemper, 12pm'],['11 Septemper, 12pm'],['12 Septemper, 12pm'],['13 Septemper, 12pm']]
@@ -23,16 +23,13 @@ YES_NO_OPTIONS = [['Yes'], ['No']]
 
 def start(update, context):
     id = update.message.chat_id
-    update.message.reply_text('''• If you are curious to know about stuff and
-crave for a thriving & harmonious planet
-based on respect for all life forms, justice and
-dignity for all - you have come to the right
-place
-• First tell us a bit about you, and we maybe
-able to help you discover something new
-about yourself in a voice note
-.''')
-    
+    user = update.message.from_user
+
+    update.message.reply_text(f'''Hello! {user.first_name} 
+If you are curious to know about stuff and crave for a thriving & harmonious planet based on respect for all life forms, justice and dignity for all - you have come to the right place,
+
+First tell us a bit about you in a voice note, and we maybe able to help you discover something new about yourself.''')
+    context.user_data['Name'] = f'{user.first_name}' 
 
     return AUDIO
 
@@ -41,43 +38,24 @@ about yourself in a voice note
 def audio(update, context):
     file = context.bot.get_file(update.message.voice.file_id)
     file.download(f'ReceivedAudio/{update.message.from_user["username"]}.ogg')
-    update.message.reply_text('What is your name?')
+    update.message.reply_text('''S-Maps is an interactive tool to ease you into the complexity of any issue that you are interested in.
 
-    return NAME
+It helps to navigate complexities that we face within and outside.
 
+his will be your own unique journey of discovery but we start of as a Cohort.
 
-def name(update, context):
-    context.user_data['Name'] = update.message.text
-    regex = '[A-Za-z]{2,25}( [A-Za-z]{2,25})?'
+Please answer some questions to register for a cohort. 
 
-    if(re.search(regex, context.user_data['Name'])):
-        update.message.reply_text('''• S-Maps is an interactive tool to ease you into
-the complexity of any issue that you are
-interested in.
-• It helps to navigate complexities that we face
-within and outside.
-• This will be your own unique journey of
-discovery but we start of as a Cohort.
-• Please answer some questions to register for a cohort. What is your professional profile.''',
+What is your professional profile.''',
                 reply_markup=ReplyKeyboardRemove())
 
-
-    else:
-        update.message.reply_text('Please enter a valid Name.',
-                reply_markup=ReplyKeyboardRemove())
-        return NAME
-    
     return PROFILE
 
 
 
 def profile(update, context):
     context.user_data['profile'] = update.message.text
-    update.message.reply_text('''The introductory process with your Cohort will take 90 minutes (I am open
-to suggestions). It will be process of self discovery so choose a date and
-time when you know you can give your full attention to the process and
-not have any competing commitments. Choose a Cohort that you would like to join (based on the date & time that
-is convenient for you)
+    update.message.reply_text('''The introductory process with your Cohort will take 90 minutes (I am open to suggestions). It will be process of self discovery so choose a date and time when you know you can give your full attention to the process and not have any competing commitments. Choose a Cohort that you would like to join (based on the date & time that is convenient for you)
 ''',
                     reply_markup=ReplyKeyboardMarkup(DATE_TIME, one_time_keyboard=True))
 
@@ -89,9 +67,9 @@ def cohort(update, context):
     text = update.message.text
 
     if [text] in DATE_TIME:
-        update.message.reply_text('''There will be 5 questions. You need to give brief answers. Do
-not over think before answering. There are no right or wrong
-answers – just answer what come to your mind naturally. Describe how you felt in a peak experience. Write 3 words only.''',
+        update.message.reply_text('''There will be 5 questions. You need to give brief answers. Do not over think before answering. There are no right or wrong answers – just answer what come to your mind naturally. 
+        
+Describe how you felt in a peak experience. Write 3 words only.''',
                     reply_markup=ReplyKeyboardRemove())
 
     else:
@@ -123,8 +101,7 @@ def purpose(update, context):
     regex = '[A-Za-z ]?'
 
     if(re.search(regex, context.user_data['purpose'])):
-        update.message.reply_text('''What is going to be my contribution? Specify a measurable
-contribution, with fruition time. Think big!''',
+        update.message.reply_text('''What is going to be my contribution? Specify a measurable contribution, with fruition time. Think big!''',
                 reply_markup=ReplyKeyboardRemove())
 
 
@@ -140,8 +117,7 @@ def contribution(update, context):
     regex = '[A-Za-z]{2,25}( [A-Za-z]{2,25})?'
 
     if(re.search(regex, context.user_data['contribution'])):
-        update.message.reply_text('''Name three people in history, mythology, fiction, science, sport or
-religion who you admire. Not anyone you know personally.''',
+        update.message.reply_text('''Name three people in history, mythology, fiction, science, sport or religion who you admire. Not anyone you know personally.''',
                 reply_markup=ReplyKeyboardRemove())
 
 
@@ -157,8 +133,7 @@ def three_people(update, context):
     regex = '[A-Za-z]{2,25}( [A-Za-z]{2,25})?'
 
     if(re.search(regex, context.user_data['three_people'])):
-        update.message.reply_text('''What are 3 qualities that you best display in your relationships and
-can be counted on for? Write 3 words only.''',
+        update.message.reply_text('''What are 3 qualities that you best display in your relationships and can be counted on for? Write 3 words only.''',
                 reply_markup=ReplyKeyboardRemove())
 
 
@@ -170,6 +145,8 @@ can be counted on for? Write 3 words only.''',
     return QUALITIES
 
 def qualities(update, context):
+    user = update.message.from_user
+
     context.user_data['qualities'] = update.message.text
     regex = '[A-Za-z]{2,25}( [A-Za-z]{2,25})?'
 
@@ -177,7 +154,7 @@ def qualities(update, context):
         update.message.reply_text(
         f'''
 Displayed below are your details,\n\n
-Name : {context.user_data['Name']}\n
+Name : {user.first_name},\n
 Profile : {context.user_data['profile']}\n
 Date & Time for cohort : {context.user_data['Date_Time']}\n
 Peak Experience : {context.user_data['peak_experience']}\n
@@ -198,20 +175,21 @@ Press "Yes" to confirm or "No" to fill details again''',
     
     return CONFIRMATION
 
-
-   
-
-
-
 def confirmation(update, context):
+    text = update.message.text
 
-    db.add_item(**context.user_data)
+    if text == 'Yes':
+        update.message.reply_text('Thankyou for registering, We will get back to you soon ',
+                reply_markup=ReplyKeyboardRemove())
+        user = update.message.from_user
+
+        db.add_item(**context.user_data)
 
     # Send message to the channel
-    context.bot.send_message(chat_id=-1001437510301,text=
+        context.bot.send_message(chat_id=-1001437510301,text=
         f'''
 New Client\n\n
-Name : {context.user_data['Name']}\n
+Name : {user.first_name}\n
 Profile : {context.user_data['profile']}\n
 Date and Time for Cohort : {context.user_data['Date_Time']}\n
 Peak Experience : {context.user_data['peak_experience']}\n
@@ -222,21 +200,27 @@ Qualities : {context.user_data["qualities"]}\n
 '''
     )
 
-    context.bot.send_voice(chat_id=-1001437510301, voice=open(f'ReceivedAudio/{update.message.from_user["username"]}.ogg', 'rb'))
+        context.bot.send_voice(chat_id=-1001437510301, voice=open(f'ReceivedAudio/{update.message.from_user["username"]}.ogg', 'rb'))
 
 
 
 
     # links of all groups
-    links = {'Level1':'https://t.me/joinchat/OI-x6Ev-ndKYJfVxr95bTA', 'Level2':'https://t.me/joinchat/OI-x6EorSA6kxlF6MQmasw', 'Level3':'https://t.me/joinchat/OI-x6EVah-zYthh7stQzUA'}
+        links = {'Level1':'https://t.me/joinchat/OI-x6Ev-ndKYJfVxr95bTA', 'Level2':'https://t.me/joinchat/OI-x6EorSA6kxlF6MQmasw', 'Level3':'https://t.me/joinchat/OI-x6EVah-zYthh7stQzUA'}
 
 
-    return ConversationHandler.END
+        return ConversationHandler.END
+    else:
+        update.message.reply_text('Bye! we hope we can talk again some day.',
+                              reply_markup=ReplyKeyboardRemove())
+
+        return cancel
+
 
 
 
 def cancel(update, context):
-    update.message.reply_text('Bye! I hope we can talk again some day.',
+    update.message.reply_text('Bye! we hope we can talk again some day.',
                               reply_markup=ReplyKeyboardRemove())
 
     return ConversationHandler.END
@@ -256,8 +240,6 @@ def main():
         states={
          
             AUDIO: [MessageHandler(Filters.voice, audio)],
-
-            NAME: [MessageHandler(Filters.text, name)],
 
             PROFILE: [MessageHandler(Filters.text, profile)],
 
