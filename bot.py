@@ -14,7 +14,7 @@ db.setup()
 
 
 
-AUDIO, SUBMIT, NAME, PROFILE, COHORT, PROCESS, PURPOSE, CONTRIBUTION, THREE_PEOPLE, QUALITIES, CONFIRMATION, POINTS= range(12)
+AUDIO, NAME, PROFILE, COHORT, PROCESS, PURPOSE, CONTRIBUTION, THREE_PEOPLE, QUALITIES, CONFIRMATION, POINTS= range(11)
 
 # OPTONS
 DATE_TIME = [['10 Septemper, 12pm'],['11 Septemper, 12pm'],['12 Septemper, 12pm'],['13 Septemper, 12pm']]
@@ -41,28 +41,10 @@ about yourself in a voice note
 def audio(update, context):
     file = context.bot.get_file(update.message.voice.file_id)
     file.download(f'ReceivedAudio/{update.message.from_user["username"]}.ogg')
+    update.message.reply_text('What is your name?')
 
-    reply_keyboard = [['Submit'], ['Change']]
-    update.message.reply_text('Want to change the audio or submit it?',
-                    reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
-    
-
-    return SUBMIT
-
-
-def submit_audio(update, context):
-    text = update.message.text
-    if text == 'Submit':
-        update.message.reply_text('What is your name?')
-    
-    elif text == 'Change':
-        update.message.reply_text('Send audio again.')
-
-    elif text == 'No' and 'Name' in context.user_data:
-        update.message.reply_text('Please, Fillup your details carefully!')
-        update.message.reply_text('What is your name?')
-    
     return NAME
+
 
 def name(update, context):
     context.user_data['Name'] = update.message.text
@@ -76,7 +58,7 @@ interested in.
 within and outside.
 • This will be your own unique journey of
 discovery but we start of as a Cohort.
-• Please answer some questions to register for a cohort''',
+• Please answer some questions to register for a cohort. What is your professional profile.''',
                 reply_markup=ReplyKeyboardRemove())
 
 
@@ -109,7 +91,7 @@ def cohort(update, context):
     if [text] in DATE_TIME:
         update.message.reply_text('''There will be 5 questions. You need to give brief answers. Do
 not over think before answering. There are no right or wrong
-answers – just answer what come to your mind naturally''',
+answers – just answer what come to your mind naturally. Describe how you felt in a peak experience. Write 3 words only.''',
                     reply_markup=ReplyKeyboardRemove())
 
     else:
@@ -121,10 +103,8 @@ answers – just answer what come to your mind naturally''',
 
 
 def process(update, context):
-    update.message.reply_text('Describe how you felt in a peak experience. Write 3 words only.',
-                reply_markup=ReplyKeyboardRemove())
     context.user_data['peak_experience'] = update.message.text
-    regex = '[A-Za-z]{2,25}( [A-Za-z]{2,25})?'
+    regex = '[A-Z a-z]'
 
     if(re.search(regex, context.user_data['peak_experience'])):
         update.message.reply_text('''What is my life’s purpose? Write 1 sentence only''',
@@ -140,7 +120,7 @@ def process(update, context):
 
 def purpose(update, context):
     context.user_data['purpose'] = update.message.text
-    regex = '[A-Za-z]{2,25}( [A-Za-z]{2,25})?'
+    regex = '[A-Za-z ]?'
 
     if(re.search(regex, context.user_data['purpose'])):
         update.message.reply_text('''What is going to be my contribution? Specify a measurable
@@ -194,24 +174,7 @@ def qualities(update, context):
     regex = '[A-Za-z]{2,25}( [A-Za-z]{2,25})?'
 
     if(re.search(regex, context.user_data['qualities'])):
-        update.message.reply_text('''Thankyou for registering.''',
-                reply_markup=ReplyKeyboardRemove())
-
-
-    else:
-        update.message.reply_text('Please enter a valid answer.',
-                reply_markup=ReplyKeyboardRemove())
-        return QUALITIES
-    
-    return CONFIRMATION
-
-
-
-
-def confirmation(update, context):
-    
-
-    update.message.reply_text(
+        update.message.reply_text(
         f'''
 Displayed below are your details,\n\n
 Name : {context.user_data['Name']}\n
@@ -221,11 +184,21 @@ Please let us know if your previous details were correct.
 Press "Yes" to confirm or "No" to fill details again''',
             reply_markup=ReplyKeyboardMarkup(YES_NO_OPTIONS, one_time_keyboard=True))
             
-    return POINTS
+        return CONFIRMATION
+
+    else:
+        update.message.reply_text('Please enter a valid answer.',
+                reply_markup=ReplyKeyboardRemove())
+        return QUALITIES
+    
+    return CONFIRMATION
+
+
+   
 
 
 
-def points(update, context):
+def confirmation(update, context):
 
     db.add_item(**context.user_data)
 
@@ -237,7 +210,6 @@ Name : {context.user_data['Name']}\n
 Profile : {context.user_data['profile']}\n
 Date and Time for Cohort : {context.user_data['Date_Time']}\n
 Peak Experience : {context.user_data['peak_experience']}\n
-Linux Experience : {context.user_data['Linux']}\n
 Purpose : {context.user_data["purpose"]}\n
 Contribution : {context.user_data["contribution"]}\n
 Three People : {context.user_data["three_people"]}\n
@@ -280,10 +252,6 @@ def main():
          
             AUDIO: [MessageHandler(Filters.voice, audio)],
 
-            SUBMIT: [MessageHandler(Filters.regex('Submit'), submit_audio),
-                   
-                    ],
-
             NAME: [MessageHandler(Filters.text, name)],
 
             PROFILE: [MessageHandler(Filters.text, profile)],
@@ -291,6 +259,8 @@ def main():
             COHORT: [MessageHandler(Filters.text, cohort)],
 
             PROCESS: [MessageHandler(Filters.text, process)],
+
+            PURPOSE: [MessageHandler(Filters.text, purpose)],
 
             CONTRIBUTION: [MessageHandler(Filters.text, contribution)],
 
@@ -300,8 +270,6 @@ def main():
             QUALITIES: [MessageHandler(Filters.text, qualities)],
 
             CONFIRMATION: [MessageHandler(Filters.text, confirmation)],
-    
-            POINTS: [MessageHandler(Filters.text, points)],
 
            
 
