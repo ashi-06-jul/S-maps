@@ -24,12 +24,12 @@ YES_NO_OPTIONS = [['Yes'], ['No']]
 def start(update, context):
     id = update.message.chat_id
     user = update.message.from_user
+    context.user_data['Name'] = f'{user.first_name}'
 
     update.message.reply_text(f'''Hello! {user.first_name} 
 If you are curious to know about stuff and crave for a thriving & harmonious planet based on respect for all life forms, justice and dignity for all - you have come to the right place,
 
 First tell us a bit about you in a voice note, and we maybe able to help you discover something new about yourself.''')
-    context.user_data['Name'] = f'{user.first_name}' 
 
     return AUDIO
 
@@ -42,7 +42,7 @@ def audio(update, context):
 
 It helps to navigate complexities that we face within and outside.
 
-his will be your own unique journey of discovery but we start of as a Cohort.
+This will be your own unique journey of discovery but we start of as a Cohort.
 
 Please answer some questions to register for a cohort. 
 
