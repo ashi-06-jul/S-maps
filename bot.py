@@ -180,6 +180,11 @@ Displayed below are your details,\n\n
 Name : {context.user_data['Name']}\n
 Profile : {context.user_data['profile']}\n
 Date & Time for cohort : {context.user_data['Date_Time']}\n
+Peak Experience : {context.user_data['peak_experience']}\n
+Purpose : {context.user_data["purpose"]}\n
+Contribution : {context.user_data["contribution"]}\n
+Three People : {context.user_data["three_people"]}\n
+Qualities : {context.user_data["qualities"]}\n
 Please let us know if your previous details were correct. 
 Press "Yes" to confirm or "No" to fill details again''',
             reply_markup=ReplyKeyboardMarkup(YES_NO_OPTIONS, one_time_keyboard=True))
@@ -205,7 +210,7 @@ def confirmation(update, context):
     # Send message to the channel
     context.bot.send_message(chat_id=-1001437510301,text=
         f'''
-New Candidate\n\n
+New Client\n\n
 Name : {context.user_data['Name']}\n
 Profile : {context.user_data['profile']}\n
 Date and Time for Cohort : {context.user_data['Date_Time']}\n
